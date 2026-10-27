@@ -1,0 +1,29 @@
+# Local sessions and personal viewing history
+/data/*.json
+.env
+.env.*
+!.env.example
+
+# Generated packages, duplicate staging folders and diagnostic baselines
+/build/
+/dist/
+/ps5_package/
+/READY_FOR_USB/
+/backup/
+
+# Downloadable host tools; the SDK and zlib source are kept for rebuilding
+/tools/downloads/
+/tools/extracted/*
+!/tools/extracted/ps5-payload-sdk/
+!/tools/extracted/zlib/
+**/.deps/
+**/__pycache__/
+*.py[cod]
+*.o
+*.pdb
+*.log
+.vs/
+.idea/
+.agents/
+
+# Keep application source and the installable archives in release/ tracked.

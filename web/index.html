@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Anime Rift — PlayStation 5 Edition (FW 13.60)</title>
+  <link rel="icon" type="image/png" href="assets/app_logo.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="hls.min.js"></script>
+</head>
+<body>
+  <!-- Ambient PS5 Background Backdrop -->
+  <div id="ambient-bg" class="ambient-bg"></div>
+  <div class="ambient-overlay"></div>
+
+  <!-- Top PlayStation 5 Navigation Bar -->
+  <header class="ps5-topbar" id="topbar">
+    <div class="brand-cluster">
+      <img src="assets/app_logo.png" alt="Anime Rift" class="brand-logo" />
+      <div class="brand-titles">
+        <span class="brand-name">ANIME RIFT</span>
+        <span class="brand-badge">PS5 13.60 EDITION</span>
+      </div>
+    </div>
+
+    <nav class="ps5-nav" id="main-nav">
+      <span class="shoulder-hint">L1</span>
+      <button class="nav-tab focusable active" data-tab="home" id="tab-home">
+        <span class="tab-icon">🏠</span>
+        <span class="tab-label">الرئيسية</span>
+      </button>
+      <button class="nav-tab focusable" data-tab="schedule" id="tab-schedule">
+        <span class="tab-icon">📅</span>
+        <span class="tab-label">الجدولة</span>
+      </button>
+      <button class="nav-tab focusable" data-tab="search" id="tab-search">
+        <span class="tab-icon">🔍</span>
+        <span class="tab-label">البحث والمكتبة</span>
+      </button>
+      <button class="nav-tab focusable" data-tab="favorites" id="tab-favorites">
+        <span class="tab-icon">❤️</span>
+        <span class="tab-label">قائمتي</span>
+      </button>
+      <button class="nav-tab focusable" data-tab="history" id="tab-history">
+        <span class="tab-icon">🕒</span>
+        <span class="tab-label">سجل المشاهدات</span>
+      </button>
+      <span class="shoulder-hint">R1</span>
+    </nav>
+
+    <div class="system-cluster">
+      <div id="gamepad-indicator" class="gamepad-pill" title="DualSense Controller Status">
+        <span class="gp-dot"></span>
+        <span id="gamepad-text">DualSense جاهز</span>
+      </div>
+      <div id="clock-display" class="clock-display">00:00</div>
+    </div>
+  </header>
+
+  <!-- Main Content Viewport -->
+  <main id="main-viewport" class="main-viewport">
+    <!-- Loading Spinner -->
+    <div id="global-loader" class="global-loader">
+      <div class="ps5-spinner"></div>
+      <p id="loader-text">جاري الاتصال بسيرفرات Anime Rift...</p>
+    </div>
+
+    <!-- VIEW 1: HOME -->
+    <section id="view-home" class="view-section active">
+      <!-- Hero Banner -->
+      <div id="hero-banner" class="hero-banner">
+        <div class="hero-content">
+          <div class="hero-badges" id="hero-badges"></div>
+          <h1 class="hero-title" id="hero-title">...</h1>
+          <p class="hero-subtitle" id="hero-subtitle"></p>
+          <div class="hero-actions">
+            <button id="hero-watch-btn" class="ps5-btn primary focusable">
+              <span class="btn-glyph cross">✕</span>
+              <span>مشاهدة الآن</span>
+            </button>
+            <button id="hero-fav-btn" class="ps5-btn secondary focusable">
+              <span class="btn-glyph square">□</span>
+              <span id="hero-fav-label">إضافة لقائمتي</span>
+            </button>
+            <button id="hero-prev-banner" class="ps5-btn icon-only focusable" title="السابق">❮</button>
+            <button id="hero-next-banner" class="ps5-btn icon-only focusable" title="التالي">❯</button>
+          </div>
+        </div>
+        <div class="hero-dots" id="hero-dots"></div>
+      </div>
+
+      <!-- Continue Watching Row (Dynamic) -->
+      <div id="continue-watching-container" class="content-row-block hidden">
+        <div class="row-header">
+          <h2 class="row-title">▶ متابعة المشاهدة</h2>
+        </div>
+        <div id="continue-watching-row" class="cards-rail"></div>
+      </div>
+
+      <!-- Genres Strip -->
+      <div class="content-row-block">
+        <div class="row-header">
+          <h2 class="row-title">✨ التصنيفات</h2>
+        </div>
+        <div id="home-genres-rail" class="genres-rail"></div>
+      </div>
+
+      <!-- Dynamic Sections Container -->
+      <div id="home-sections-container"></div>
+    </section>
+
+    <!-- VIEW 2: SCHEDULE -->
+    <section id="view-schedule" class="view-section hidden">
+      <div class="section-header-bar">
+        <h2>📅 جدول مواعيد عرض الحلقات</h2>
+        <p class="section-sub">مواعيد بث الأنميات المستمرة حسب أيام الأسبوع</p>
+      </div>
+      <div id="schedule-days-bar" class="pills-bar"></div>
+      <div id="schedule-grid" class="anime-grid"></div>
+    </section>
+
+    <!-- VIEW 3: SEARCH & LIBRARY FILTER -->
+    <section id="view-search" class="view-section hidden">
+      <div class="search-controls-panel">
+        <div class="search-input-row">
+          <input
+            type="text"
+            id="search-input"
+            class="ps5-search-input focusable"
+            placeholder="ابحث عن اسم الأنمي بالعربية أو الإنجليزية (مثال: One Piece, Naruto, Solo Leveling)..."
+          />
+          <button id="search-submit-btn" class="ps5-btn primary focusable">بحث 🔍</button>
+          <button id="search-clear-btn" class="ps5-btn secondary focusable">مسح ✕</button>
+        </div>
+
+        <!-- On-Screen Quick Keyboard / Popular Searches for Controller -->
+        <div class="quick-tags-bar" id="quick-search-tags">
+          <span class="filter-label">بحث سريع:</span>
+          <button class="chip focusable" data-q="One Piece">One Piece</button>
+          <button class="chip focusable" data-q="Bleach">Bleach</button>
+          <button class="chip focusable" data-q="Naruto">Naruto</button>
+          <button class="chip focusable" data-q="Dragon Ball">Dragon Ball</button>
+          <button class="chip focusable" data-q="Attack on Titan">Attack on Titan</button>
+          <button class="chip focusable" data-q="Jujutsu Kaisen">Jujutsu Kaisen</button>
+          <button class="chip focusable" data-q="Demon Slayer">Demon Slayer</button>
+          <button class="chip focusable" data-q="Solo Leveling">Solo Leveling</button>
+          <button class="chip focusable" data-q="Hunter x Hunter">Hunter x Hunter</button>
+          <button class="chip focusable" data-q="Conan">Detective Conan</button>
+        </div>
+
+        <!-- Filter Row: Status & Sort & Type -->
+        <div class="filters-row">
+          <div class="filter-group">
+            <span class="filter-label">الترتيب:</span>
+            <button class="chip filter-sort focusable active" data-sort="latest_episode_released">الأحدث</button>
+            <button class="chip filter-sort focusable" data-sort="myAnimeList_rating">الأعلى تقييماً</button>
+            <button class="chip filter-sort focusable" data-sort="mal_favorites">الأكثر شعبية</button>
+            <button class="chip filter-sort focusable" data-sort="release_year">سنة الإصدار</button>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">الحالة:</span>
+            <button class="chip filter-status focusable active" data-status="">الكل</button>
+            <button class="chip filter-status focusable" data-status="on_going">مستمر</button>
+            <button class="chip filter-status focusable" data-status="completed">مكتمل</button>
+          </div>
+          <div class="filter-group">
+            <span class="filter-label">النوع:</span>
+            <button class="chip filter-type focusable active" data-type="">الكل</button>
+            <button class="chip filter-type focusable" data-type="tv">مسلسل TV</button>
+            <button class="chip filter-type focusable" data-type="movie">فيلم Movie</button>
+            <button class="chip filter-type focusable" data-type="ova">OVA / ONA</button>
+          </div>
+        </div>
+
+        <!-- Genre Filter Bar -->
+        <div id="search-genres-bar" class="pills-bar compact"></div>
+      </div>
+
+      <div id="search-results-grid" class="anime-grid"></div>
+      <div class="load-more-wrap">
+        <button id="search-load-more" class="ps5-btn secondary focusable hidden">عرض المزيد من النتائج ⬇</button>
+      </div>
+    </section>
+
+    <!-- VIEW 4: FAVORITES (قائمتي) -->
+    <section id="view-favorites" class="view-section hidden">
+      <div class="section-header-bar">
+        <h2>❤️ قائمتي المفضلة</h2>
+        <p class="section-sub">الأنميات المحفوظة على جهاز PlayStation 5 الخاص بك</p>
+      </div>
+      <div id="favorites-grid" class="anime-grid"></div>
+    </section>
+
+    <!-- VIEW 5: WATCH HISTORY (سجل المشاهدات) -->
+    <section id="view-history" class="view-section hidden">
+      <div class="section-header-bar">
+        <div class="header-with-action">
+          <div>
+            <h2>🕒 سجل المشاهدات</h2>
+            <p class="section-sub">تابع مشاهدة الحلقات من نفس الثانية التي توقفت عندها</p>
+          </div>
+          <button id="clear-history-btn" class="ps5-btn secondary focusable">مسح السجل 🗑️</button>
+        </div>
+      </div>
+      <div id="history-grid" class="anime-grid"></div>
+    </section>
+  </main>
+
+  <!-- ANIME DETAILS & EPISODES OVERLAY -->
+  <aside id="details-modal" class="details-modal hidden">
+    <div id="details-backdrop" class="details-backdrop"></div>
+    <div class="details-backdrop-grad"></div>
+
+    <div class="details-container">
+      <div class="details-top-actions">
+        <button id="details-back-btn" class="ps5-btn secondary focusable">
+          <span class="btn-glyph circle">○</span>
+          <span>رجوع</span>
+        </button>
+      </div>
+
+      <div class="details-hero">
+        <img id="details-poster" src="" alt="" class="details-poster" />
+        <div class="details-info">
+          <div id="details-badges" class="hero-badges"></div>
+          <h1 id="details-title" class="details-title"></h1>
+          <h3 id="details-alt-title" class="details-alt-title"></h3>
+          <div id="details-genres" class="details-genres"></div>
+          <p id="details-synopsis" class="details-synopsis"></p>
+          <div id="details-broadcast" class="details-broadcast hidden"></div>
+
+          <div class="details-cta-row">
+            <button id="details-play-first-btn" class="ps5-btn primary focusable">
+              <span class="btn-glyph cross">✕</span>
+              <span id="details-play-btn-label">تشغيل الحلقة 1</span>
+            </button>
+            <button id="details-fav-btn" class="ps5-btn secondary focusable">
+              <span class="btn-glyph square">□</span>
+              <span id="details-fav-label">إضافة لقائمتي</span>
+            </button>
+            <button id="details-sort-ep-btn" class="ps5-btn secondary focusable">
+              <span>ترتيب الحلقات: الأحدث ⇅</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Episode Search & Range Filter -->
+      <div class="episodes-section">
+        <div class="episodes-header">
+          <h2 id="episodes-count-title">الحلقات</h2>
+          <div class="ep-filter-tools">
+            <input
+              type="number"
+              id="ep-jump-input"
+              class="ep-jump-input focusable"
+              placeholder="انتقل لرقم الحلقة..."
+              min="1"
+            />
+          </div>
+        </div>
+        <div id="episodes-ranges-bar" class="pills-bar compact"></div>
+        <div id="episodes-grid" class="episodes-grid"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- FULLSCREEN PS5 VIDEO PLAYER OVERLAY -->
+  <section id="player-modal" class="player-modal hidden">
+    <video id="ps5-video" class="ps5-video" playsinline crossorigin="anonymous"></video>
+
+    <!-- Player Loading Indicator -->
+    <div id="player-spinner" class="player-spinner hidden">
+      <div class="ps5-spinner"></div>
+      <p id="player-status-text">جاري تجهيز البث المباشر...</p>
+    </div>
+
+    <!-- Floating Skip Intro / Skip Outro Button -->
+    <button id="skip-segment-btn" class="skip-segment-btn focusable hidden">
+      <span class="btn-glyph r1">R1</span>
+      <span id="skip-segment-label">تخطي البداية ⏭</span>
+    </button>
+
+    <!-- Player HUD Controls -->
+    <div id="player-hud" class="player-hud">
+      <!-- Top Bar -->
+      <div class="player-top-bar">
+        <button id="player-close-btn" class="ps5-btn secondary focusable">
+          <span class="btn-glyph circle">○</span>
+          <span>خروج</span>
+        </button>
+        <div class="player-titles">
+          <h2 id="player-anime-title">عنوان الأنمي</h2>
+          <p id="player-ep-title">الحلقة 1</p>
+        </div>
+        <div class="player-server-badge" id="player-active-badge">CR2 • 1080P</div>
+      </div>
+
+      <!-- Center Controls & Bottom Scrubber -->
+      <div class="player-bottom-panel">
+        <!-- Timeline Scrubber -->
+        <div class="timeline-row">
+          <span id="player-time-current" class="time-label">00:00</span>
+          <div id="player-progress-track" class="progress-track focusable" tabindex="0">
+            <div id="player-progress-buffer" class="progress-buffer"></div>
+            <div id="player-intro-marker" class="segment-marker intro hidden"></div>
+            <div id="player-outro-marker" class="segment-marker outro hidden"></div>
+            <div id="player-progress-fill" class="progress-fill"></div>
+          </div>
+          <span id="player-time-total" class="time-label">24:00</span>
+        </div>
+
+        <!-- Transport & Server Controls -->
+        <div class="player-controls-row">
+          <div class="transport-group">
+            <button id="player-prev-ep" class="ps5-btn secondary focusable" title="الحلقة السابقة (L1)">
+              <span>⏮ السابقة</span>
+            </button>
+            <button id="player-seek-back" class="ps5-btn secondary focusable" title="رجوع 10 ثواني (L2)">
+              <span>⏪ -10s</span>
+            </button>
+            <button id="player-play-pause" class="ps5-btn primary focusable">
+              <span id="player-play-icon">⏸ إيقاف مؤقت</span>
+            </button>
+            <button id="player-seek-fwd" class="ps5-btn secondary focusable" title="تقديم 10 ثواني (R2)">
+              <span>+10s ⏩</span>
+            </button>
+            <button id="player-next-ep" class="ps5-btn secondary focusable" title="الحلقة التالية (R1)">
+              <span>التالية ⏭</span>
+            </button>
+          </div>
+
+          <!-- Server & Quality Selector Pills -->
+          <div class="server-selector-group">
+            <span class="selector-label">السيرفر والجودة (△):</span>
+            <div id="player-servers-list" class="player-servers-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toast Notification -->
+  <div id="ps5-toast" class="ps5-toast hidden"></div>
+
+  <!-- Bottom DualSense Controller Legend Bar -->
+  <footer class="ps5-footer-bar">
+    <div class="legend-item">
+      <span class="btn-glyph cross">✕</span>
+      <span>اختيار / تشغيل</span>
+    </div>
+    <div class="legend-item">
+      <span class="btn-glyph circle">○</span>
+      <span>رجوع</span>
+    </div>
+    <div class="legend-item">
+      <span class="btn-glyph square">□</span>
+      <span>إضافة لقائمتي</span>
+    </div>
+    <div class="legend-item">
+      <span class="btn-glyph triangle">△</span>
+      <span>البحث السريع / تبديل السيرفر</span>
+    </div>
+    <div class="legend-item">
+      <span class="shoulder-mini">L1 / R1</span>
+      <span>تبديل الأقسام / تخطي المقدمة</span>
+    </div>
+    <div class="legend-item">
+      <span class="shoulder-mini">L2 / R2</span>
+      <span>تقديم وتأخير الفيديو</span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+Phase,Test_ID,Target,Variant,Test_Description,Static_Gate,Hardware_Gate,Status
+Phase A,TC-01,Baseline,Old_Build,Verify original broken ELF PT_LOAD alignment,FAIL (0x108!=0),FAIL (Crash on PS5),PASS (Baseline Established)
+Phase B,TC-02,Converter,Source,Patch sce_module_writer.cpp for 16 KiB RELRO,PASS (0 violations),N/A,PASS (Tool Patched)
+Phase B,TC-03,Rebuild,Smoke_ELF,Clean compile & link smoke variant with clang 19,PASS,Pending PS5 Test,PASS (Built)
+Phase B,TC-04,Rebuild,Full_ELF,Clean compile & link full variant with clang 19,PASS,Pending PS5 Test,PASS (Built)
+Phase B,TC-05,Validator,Smoke_FSELF,Inspect FSELF magic & inner ELF congruence,PASS (Valid digest),Pending PS5 Test,PASS (Verified)
+Phase B,TC-06,Validator,Full_FSELF,Inspect FSELF magic & inner ELF congruence,PASS (Valid digest),Pending PS5 Test,PASS (Verified)
+Phase C,TC-07,Hardware,Smoke_Folder,Test minimal Hello World folder on PS5 FW 13.60,PASS,User Hardware Test,READY FOR HARDWARE TEST
+Phase D,TC-08,Hardware,ShadowMount,Test ShadowMountPlus registration & mount without duplicate IDs,PASS,User Hardware Test,READY FOR HARDWARE TEST
+Phase G,TC-09,Hardware,Full_Folder,Test full UniRift VideoOut dashboard & embedded server,PASS,User Hardware Test,STANDBY AFTER TC-07
+Phase H,TC-10,Player,FFplay,Test isolated HLS player / video pipeline,PASS (Isolated),User Hardware Test,STANDBY AFTER TC-09
