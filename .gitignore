@@ -8,7 +8,6 @@
 /build/
 /dist/
 /ps5_package/
-/READY_FOR_USB/
 /backup/
 
 # Downloadable host tools; the SDK and zlib source are kept for rebuilding
